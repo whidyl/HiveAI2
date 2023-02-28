@@ -3,6 +3,7 @@ export default class HiveWorld {
     this.blackHand = this.makeStartingHand(Color.BLACK);
     this.whiteHand = this.makeStartingHand(Color.WHITE);
     this.board = {};
+    this.turn = 0;
   }
 
   makeStartingHand(color) {
@@ -24,6 +25,7 @@ export default class HiveWorld {
   doMove(move) {
     this.getHand(move.piece.color).delete(move.piece);
     this.board[move.pos] = move.piece;
+    this.turn++;
   }
 
   getPieceAt(pos) {
@@ -39,11 +41,16 @@ export default class HiveWorld {
   }
 
   getPlaceMoves(color) {
-    return [...this.getHand(color)].map((piece) => new Move(piece, ORIGIN));
+    if (this.turn == 0)
+      return [...this.getHand(color)].map((piece) => new Move(piece, ORIGIN));
+    else
+      return [...this.getHand(color)].map((piece) => new Move(piece, ORIGIN.topRight));
   }
 }
 
-export const ORIGIN = "";
+export const ORIGIN = {
+  topRight: "tr"
+}
 
 export class Piece {
   constructor(type, color) {

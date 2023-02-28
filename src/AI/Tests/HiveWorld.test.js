@@ -65,16 +65,28 @@ describe("getPlaceMoves(Color)", () => {
       expect(movesContains(moves, new Move(piece, ORIGIN))).toBe(true);
     });
   });
+
+  test("after first placement, returns positions around first tile.", () => {
+    let hw = new HiveWorld();
+    hw.doMove([...hw.getPlaceMoves(Color.WHITE)][0]);
+
+    const placeMoves = hw.getPlaceMoves(Color.BLACK);
+
+    hw.getHand(Color.BLACK).forEach(piece => {
+      expect(movesContains(placeMoves, new Move(piece, ORIGIN.topRight))).toBe(true);
+      //TODO: expect(movesContains(placeMoves, new Move(piece, ORIGIN.topLeft))).toBe(true);
+    });
+  });
 });
 
 describe("doMove(Move)", () => {
   test("first placement of some piece, piece is at origin", () => {
     let hiveWorld = new HiveWorld();
-    const move = [...hiveWorld.getPlaceMoves(Color.WHITE)][0];
+    const someMove = [...hiveWorld.getPlaceMoves(Color.WHITE)][0];
 
-    hiveWorld.doMove(move);
+    hiveWorld.doMove(someMove);
 
-    expect(hiveWorld.getPieceAt(ORIGIN)).toBe(move.piece);
+    expect(hiveWorld.getPieceAt(ORIGIN)).toBe(someMove.piece);
     expect(hiveWorld.getHand(Color.WHITE).size).toBe(10);
   });
 });
