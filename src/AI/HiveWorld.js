@@ -40,16 +40,35 @@ export default class HiveWorld {
     return color === Color.WHITE ? this.whiteHand : this.blackHand;
   }
 
+  getFirstPlaceMoves(color) {
+    return [...this.getHand(color)].map((piece) => new Move(piece, ORIGIN));
+  }
+
+  getSecondPlaceMoves(color) {
+    let moves = [];
+      for (const pos of [ORIGIN.topLeft, ORIGIN.topRight, ORIGIN.left, ORIGIN.right, ORIGIN.botLeft, ORIGIN.botRight]) {
+        const handAtPos = [...this.getHand(color)].map((piece) => new Move(piece, pos))
+        moves.push(...handAtPos);
+      }
+      return moves;
+  }
+
   getPlaceMoves(color) {
-    if (this.turn == 0)
-      return [...this.getHand(color)].map((piece) => new Move(piece, ORIGIN));
-    else
-      return [...this.getHand(color)].map((piece) => new Move(piece, ORIGIN.topRight));
+    if (this.turn === 0)
+      return this.getFirstPlaceMoves(color);
+    else {
+      return this.getSecondPlaceMoves(color);
+    }
   }
 }
 
 export const ORIGIN = {
-  topRight: "tr"
+  topRight: "tr",
+  topLeft: "tl",
+  left: "l",
+  right: "r",
+  botLeft: "bl",
+  botRight: "br"
 }
 
 export class Piece {
