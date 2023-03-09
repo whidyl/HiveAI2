@@ -74,7 +74,11 @@ describe("getPlaceMoves(Color)", () => {
 
     hw.getHand(Color.BLACK).forEach(piece => {
       expect(movesContains(placeMoves, new Move(piece, ORIGIN.topRight))).toBe(true);
-      //TODO: expect(movesContains(placeMoves, new Move(piece, ORIGIN.topLeft))).toBe(true);
+      expect(movesContains(placeMoves, new Move(piece, ORIGIN.topLeft))).toBe(true);
+      expect(movesContains(placeMoves, new Move(piece, ORIGIN.left))).toBe(true);
+      expect(movesContains(placeMoves, new Move(piece, ORIGIN.right))).toBe(true);
+      expect(movesContains(placeMoves, new Move(piece, ORIGIN.botLeft))).toBe(true);
+      expect(movesContains(placeMoves, new Move(piece, ORIGIN.botRight))).toBe(true);
     });
   });
 });
