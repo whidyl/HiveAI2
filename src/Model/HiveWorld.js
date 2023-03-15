@@ -1,12 +1,12 @@
 export default class HiveWorld {
   constructor() {
-    this.blackHand = this.makeStartingHand(Color.BLACK);
-    this.whiteHand = this.makeStartingHand(Color.WHITE);
+    this.blackHand = this.#makeStartingHand(Color.BLACK);
+    this.whiteHand = this.#makeStartingHand(Color.WHITE);
     this.board = {};
     this.turn = 0;
   }
 
-  makeStartingHand(color) {
+  #makeStartingHand(color) {
     return new Set([
       new Piece(PieceType.QUEEN, color),
       new Piece(PieceType.SPIDER, color),
