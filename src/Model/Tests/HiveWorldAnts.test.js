@@ -9,7 +9,7 @@ describe("getPlaceMoves()", () => {
 
         let placeMoves = hw.getPlaceMoves();
 
-        expect(placeMoves).toContainEqual({pos: ORIGIN, piece: blackAnt});
+        expect(placeMoves).toContainEqual({pos: ORIGIN, piece: whiteAnt});
     })
     
     test("place second ant is around origin.", () => {
@@ -17,10 +17,11 @@ describe("getPlaceMoves()", () => {
         
         let firstMoves = hw.getPlaceMoves();
         hw.doMove(firstMoves[0]);
-        let secondMoves = hw.getPlaceMoves(Color.WHITE);
+        let secondMoves = hw.getPlaceMoves();
 
-        expect(secondMoves).toContainEqual({pos: ORIGIN.botLeft, piece: whiteAnt});
-        expect(secondMoves).toContainEqual({pos: ORIGIN.topRight, piece: whiteAnt});
-        expect(secondMoves).toContainEqual({pos: ORIGIN.right, piece: whiteAnt});
+        expect(secondMoves).toContainEqual({pos: ORIGIN.botLeft, piece: blackAnt});
+        expect(secondMoves).toContainEqual({pos: ORIGIN.topRight, piece: blackAnt});
+        expect(secondMoves).toContainEqual({pos: ORIGIN.right, piece: blackAnt});
     })
+
 });

@@ -55,11 +55,11 @@ describe("Move", () => {
 });
 
 describe("getPlaceMoves(Color)", () => {
-  test("first move, returns any piece at origin", () => {
+  test("first move, returns any WHITE piece at ORIGIN", () => {
     let hiveWorld = new HiveWorld();
-    const hand = hiveWorld.getHand(Color.BLACK);
+    const hand = hiveWorld.getHand(Color.WHITE);
 
-    const moves = hiveWorld.getPlaceMoves(Color.BLACK);
+    const moves = hiveWorld.getPlaceMoves();
 
     hand.forEach((piece) => {
       expect(movesContains(moves, new Move(piece, ORIGIN))).toBe(true);

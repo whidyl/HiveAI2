@@ -6,6 +6,10 @@ export default class HiveWorld {
     this.turn = 0;
   }
 
+  get currColor() {
+    return ((this.turn % 2) === 0) ? Color.WHITE : Color.BLACK;
+  }
+
   #makeStartingHand(color) {
     return new Set([
       new Piece(PieceType.QUEEN, color),
@@ -40,24 +44,24 @@ export default class HiveWorld {
     return color === Color.WHITE ? this.whiteHand : this.blackHand;
   }
 
-  getFirstPlaceMoves(color) {
-    return [...this.getHand(color)].map((piece) => new Move(piece, ORIGIN));
+  getFirstPlaceMoves() {
+    return [...this.getHand(this.currColor)].map((piece) => new Move(piece, ORIGIN));
   }
 
-  getSecondPlaceMoves(color) {
+  getSecondPlaceMoves() {
     let moves = [];
       for (const pos of [ORIGIN.topLeft, ORIGIN.topRight, ORIGIN.left, ORIGIN.right, ORIGIN.botLeft, ORIGIN.botRight]) {
-        const handAtPos = [...this.getHand(color)].map((piece) => new Move(piece, pos))
+        const handAtPos = [...this.getHand(this.currColor)].map((piece) => new Move(piece, pos))
         moves.push(...handAtPos);
       }
       return moves;
   }
 
-  getPlaceMoves(color) {
+  getPlaceMoves() {
     if (this.turn === 0)
-      return this.getFirstPlaceMoves(color);
+      return this.getFirstPlaceMoves(this.currColor);
     else {
-      return this.getSecondPlaceMoves(color);
+      return this.getSecondPlaceMoves(this.currColor);
     }
   }
 }
