@@ -22,6 +22,34 @@ describe("getPlaceMoves()", () => {
         expect(secondMoves).toContainEqual({pos: ORIGIN.botLeft, piece: blackAnt});
         expect(secondMoves).toContainEqual({pos: ORIGIN.topRight, piece: blackAnt});
         expect(secondMoves).toContainEqual({pos: ORIGIN.right, piece: blackAnt});
+        expect(secondMoves).not.toContainEqual({pos: ORIGIN, piece: firstMoves[0].piece});
     })
+
+    test("place third ant does not include blocked tiles.", () => {
+        let hw = new HiveWorld();
+        const firstMove = hw.getPlaceMoves()[0]
+        hw.doMove(firstMove);
+        const secondMove = hw.getPlaceMoves()[0];
+        hw.doMove(secondMove);
+
+        const thirdMoves = hw.getPlaceMoves();
+        
+        expect(thirdMoves).not.toContainEqual(firstMove);
+        expect(thirdMoves).not.toContainEqual(secondMove);
+    })
+
+    // test("place third ant includes positions around last move.", () => {
+    //     let hw = new HiveWorld();
+    //     const firstMove = hw.getPlaceMoves()[0]
+    //     hw.doMove(firstMove);
+    //     const secondMovePos = firstMove.pos.topLeft;
+    //     const secondMove = hw.getPlaceMoves().find(move => Object.is(move.pos, secondMovePos));
+    //     hw.doMove(secondMove);
+
+    //     const thirdMoves = hw.getPlaceMoves();
+        
+    //     expect(thirdMoves).toContainEqual({pos: secondMovePos.left, piece: whiteAnt});
+    //     // expect(thirdMoves).not.toContainEqual(secondMove);
+    // })
 
 });

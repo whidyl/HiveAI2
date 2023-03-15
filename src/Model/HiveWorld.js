@@ -59,20 +59,23 @@ export default class HiveWorld {
 
   getPlaceMoves() {
     if (this.turn === 0)
-      return this.getFirstPlaceMoves(this.currColor);
-    else {
-      return this.getSecondPlaceMoves(this.currColor);
-    }
+      return this.getFirstPlaceMoves();
+    
+    // let moves = new Set();
+    // this.getHand(this.currColor).forEach(piece => {
+    //   for (const pos in this.board) {
+    //     moves.add(new Move(piece, pos.topLeft));
+    //     moves.add(new Move(piece, pos.topRight));
+    //     moves.add(new Move(piece, pos.left));
+    //     moves.add(new Move(piece, pos.right));
+    //     moves.add(new Move(piece, pos.botLeft));
+    //     moves.add(new Move(piece, pos.botRight));
+    //   }
+    // });
+    
+    return this.getSecondPlaceMoves();
+    
   }
-}
-
-export const ORIGIN = {
-  topRight: "tr",
-  topLeft: "tl",
-  left: "l",
-  right: "r",
-  botLeft: "bl",
-  botRight: "br"
 }
 
 export class Piece {
@@ -92,6 +95,44 @@ export class Move {
     return Object.is(this.piece, otherMove.piece) && this.pos == otherMove.pos;
   }
 }
+
+export class HexPos {
+  constructor(x, y, z) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+  }
+
+  equals(other) {
+    return (this.x === other.x && this.y === other.y && this.z === other.z );
+  }
+
+  get left() {
+    return new HexPos(this.x - 1, this.y, this.z + 1);
+  }
+
+  get right() {
+    return new HexPos(this.x + 1, this.y, this.z - 1);
+  }
+
+  get topLeft() {
+    return new HexPos(this.x, this.y - 1, this.z + 1);
+  }
+
+  get botRight() {
+    return new HexPos(this.x, this.y + 1, this.z - 1);
+  }
+
+  get topRight() {
+    return new HexPos(this.x + 1, this.y - 1, this.z);
+  }
+
+  get botLeft() {
+    return new HexPos(this.x - 1, this.y + 1, this.z);
+  }
+}
+
+export const ORIGIN = new HexPos(0, 0, 0);
 
 export const Color = {
   BLACK: "black",
