@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom/extend-expect";
-import Action from ".././Action";
-import Agent from ".././Agent";
-import { VacuumWorldProblem } from ".././TestBeds";
+import Action from "../../Action";
+import Agent from "../../Agent";
+import { VacuumWorldProblem } from "../../TestBeds";
 
 describe("construction", () => {
   test("no params, has expected intial state.", () => {

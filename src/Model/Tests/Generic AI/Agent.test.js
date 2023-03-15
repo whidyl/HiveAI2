@@ -1,8 +1,8 @@
 import "@testing-library/jest-dom/extend-expect";
-import Agent from ".././Agent";
-import { AtomicEnvironment } from ".././Environments";
-import Sensor from ".././Sensor";
-import Action from ".././Action";
+import Agent from "../../Agent";
+import { AtomicEnvironment } from "../../Environments";
+import Sensor from "../../Sensor";
+import Action from "../../Action";
 
 describe("constructor", () => {
   test("given an atomic environment, has expected environment.", () => {
