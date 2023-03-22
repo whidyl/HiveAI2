@@ -2,7 +2,7 @@ export default class HiveWorld {
   constructor() {
     this.blackHand = this.#makeStartingHand(Color.BLACK);
     this.whiteHand = this.#makeStartingHand(Color.WHITE);
-    this.board = {};
+    this.board = new Map();
     this.turn = 0;
   }
 
@@ -28,12 +28,15 @@ export default class HiveWorld {
 
   doMove(move) {
     this.getHand(move.piece.color).delete(move.piece);
-    this.board[move.pos] = move.piece;
+    this.board.set(move.pos, move.piece);
     this.turn++;
   }
 
-  getPieceAt(pos) {
-    return this.board[pos];
+  findPieceAt(pos) {
+    const pieceWithPos = this.board.get(pos)
+    if (pieceWithPos)
+      return pieceWithPos;
+    return this.board.get(Array.from(this.board.keys()).find(p => p.equals(pos)));
   }
 
   isEmpty() {
@@ -48,33 +51,37 @@ export default class HiveWorld {
     return [...this.getHand(this.currColor)].map((piece) => new Move(piece, ORIGIN));
   }
 
-  getSecondPlaceMoves() {
+  getUnblockedMovesAroundAllPieces() {
     let moves = [];
-      for (const pos of [ORIGIN.topLeft, ORIGIN.topRight, ORIGIN.left, ORIGIN.right, ORIGIN.botLeft, ORIGIN.botRight]) {
-        const handAtPos = [...this.getHand(this.currColor)].map((piece) => new Move(piece, pos))
-        moves.push(...handAtPos);
+    this.getHand(this.currColor).forEach(piece => {
+      for (const pos of this.getAllPiecePositions()) {
+        for (const potentialPos of pos.surrounding) {
+          if (this.findPieceAt(potentialPos) === undefined) {
+            moves.push(new Move(piece, potentialPos));
+          }
+        }
       }
-      return moves;
+    });
+    return moves;
   }
 
   getPlaceMoves() {
     if (this.turn === 0)
       return this.getFirstPlaceMoves();
+    else
+      return this.getUnblockedMovesAroundAllPieces()
     
-    // let moves = new Set();
-    // this.getHand(this.currColor).forEach(piece => {
-    //   for (const pos in this.board) {
-    //     moves.add(new Move(piece, pos.topLeft));
-    //     moves.add(new Move(piece, pos.topRight));
-    //     moves.add(new Move(piece, pos.left));
-    //     moves.add(new Move(piece, pos.right));
-    //     moves.add(new Move(piece, pos.botLeft));
-    //     moves.add(new Move(piece, pos.botRight));
-    //   }
-    // });
-    
-    return this.getSecondPlaceMoves();
-    
+  }
+
+  getAllPiecePositions() {
+    return Array.from(this.board.keys());
+  }
+
+  // testing utilities
+
+  findPlaceMoveAt(pos) {
+    return this.getPlaceMoves().find(move => 
+      move.pos.equals(pos));
   }
 }
 
@@ -105,6 +112,10 @@ export class HexPos {
 
   equals(other) {
     return (this.x === other.x && this.y === other.y && this.z === other.z );
+  }
+
+  get surrounding() {
+    return [this.topLeft, this.topRight, this.left, this.right, this.botLeft, this.botRight];
   }
 
   get left() {

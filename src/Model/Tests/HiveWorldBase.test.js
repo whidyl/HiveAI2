@@ -62,7 +62,7 @@ describe("getPlaceMoves(Color)", () => {
     const moves = hiveWorld.getPlaceMoves();
 
     hand.forEach((piece) => {
-      expect(movesContains(moves, new Move(piece, ORIGIN))).toBe(true);
+      expect(moves).toContainEqual(new Move(piece, ORIGIN));
     });
   });
 
@@ -83,6 +83,40 @@ describe("getPlaceMoves(Color)", () => {
   });
 });
 
+describe("getPlaceMoveAt", () => {
+  test("after move at origin, gets piece there", () => {
+    let hw = new HiveWorld();
+    const move = hw.findPlaceMoveAt(ORIGIN)
+    hw.doMove(move);
+
+    const piece = hw.findPieceAt(ORIGIN);
+
+    expect(piece).not.toBeNull();
+    expect(piece).not.toBeUndefined();
+  });
+
+  test("after move at origin, gets piece at new pos defined at origin.", () => {
+    let hw = new HiveWorld();
+    const move = hw.findPlaceMoveAt(ORIGIN)
+    hw.doMove(move);
+
+    const piece = hw.findPieceAt(new HexPos(0, 0, 0));
+
+    expect(piece).not.toBeNull();
+    expect(piece).not.toBeUndefined();
+  });
+
+  test("after move at origin, gets undefined elsewhere", () => {
+    let hw = new HiveWorld();
+    const move = hw.findPlaceMoveAt(ORIGIN)
+    hw.doMove(move);
+
+    const piece = hw.findPieceAt(ORIGIN.left);
+
+    expect(piece).toBeUndefined();
+  });
+})
+
 describe("doMove(Move)", () => {
   test("first placement of some piece, piece is at origin", () => {
     let hiveWorld = new HiveWorld();
@@ -90,12 +124,12 @@ describe("doMove(Move)", () => {
 
     hiveWorld.doMove(someMove);
 
-    expect(hiveWorld.getPieceAt(ORIGIN)).toBe(someMove.piece);
+    expect(hiveWorld.findPieceAt(ORIGIN)).toBe(someMove.piece);
     expect(hiveWorld.getHand(Color.WHITE).size).toBe(10);
   });
 });
 
-describe("Pos", () => {
+describe("HexPos", () => {
   test.each([
     [0, 0, 0],
     [-5, -3, -1],
@@ -137,12 +171,33 @@ describe("Pos", () => {
   });
 });
 
-const movesContains = (moves, move) => {
-  let isContained = false;
-  moves.forEach((m) => {
-    if (move.equals(m)) {
-      isContained = true;
-    }
+describe("findPlaceMoveAt", () => {
+  test("first move, gets move at origin.", () => {
+    const hw = new HiveWorld();
+    
+    const move = hw.findPlaceMoveAt(ORIGIN);
+
+    expect(move).not.toBeUndefined();
+    expect(move.pos).toStrictEqual(ORIGIN)
   });
-  return isContained;
-};
+
+  test("first move, gets undefined beside origin.", () => {
+    const hw = new HiveWorld();
+    
+    const move = hw.findPlaceMoveAt(ORIGIN.left);
+
+    expect(move).toBeUndefined();
+  });
+})
+
+describe("getAllPiecePositions()", () => {
+  test("after first move, gets single origin pos.", () => {
+    const hw = new HiveWorld();
+    hw.doMove(hw.findPlaceMoveAt(ORIGIN));
+
+    const positions = hw.getAllPiecePositions();
+
+    expect(positions.length).toBe(1);
+    expect(positions[0]).toStrictEqual(ORIGIN)
+  })
+});
