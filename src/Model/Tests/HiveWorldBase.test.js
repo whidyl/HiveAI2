@@ -51,13 +51,22 @@ describe("Move", () => {
 
       expect(move1.equals(move2)).toBe(true);
     });
+
+    test("same piece 'equal' positions, returns true", () => {
+      const piece = new Piece(PieceType.ANT, Color.BLACK);
+
+      let move1 = new Move(piece, ORIGIN);
+      let move2 = new Move(piece, ORIGIN.left.right);
+
+      expect(move1.equals(move2)).toBe(true);
+    });
   });
 });
 
 describe("getPlaceMoves(Color)", () => {
-  test("first move, returns any WHITE piece at ORIGIN", () => {
+  test("first move, returns any BLACK piece at ORIGIN", () => {
     let hiveWorld = new HiveWorld();
-    const hand = hiveWorld.getHand(Color.WHITE);
+    const hand = hiveWorld.getHand(Color.BLACK);
 
     const moves = hiveWorld.getPlaceMoves();
 
@@ -68,11 +77,11 @@ describe("getPlaceMoves(Color)", () => {
 
   test("after first placement, returns positions around first tile.", () => {
     let hw = new HiveWorld();
-    hw.doMove([...hw.getPlaceMoves(Color.WHITE)][0]);
+    hw.doMove(hw.findPlaceMoveAt(ORIGIN));
 
-    const placeMoves = hw.getPlaceMoves(Color.BLACK);
+    const placeMoves = hw.getPlaceMoves();
 
-    hw.getHand(Color.BLACK).forEach(piece => {
+    hw.getHand(Color.WHITE).forEach(piece => {
       expect(placeMoves).toContainEqual(new Move(piece, ORIGIN.topRight));
       expect(placeMoves).toContainEqual(new Move(piece, ORIGIN.topLeft));
       expect(placeMoves).toContainEqual(new Move(piece, ORIGIN.left));
@@ -84,15 +93,14 @@ describe("getPlaceMoves(Color)", () => {
 });
 
 describe("getPlaceMoveAt", () => {
-  test("after move at origin, gets piece there", () => {
+  test("after move at origin, gets black piece there", () => {
     let hw = new HiveWorld();
     const move = hw.findPlaceMoveAt(ORIGIN)
     hw.doMove(move);
 
     const piece = hw.findPieceAt(ORIGIN);
 
-    expect(piece).not.toBeNull();
-    expect(piece).not.toBeUndefined();
+    expect(piece.color).toBe(Color.BLACK);
   });
 
   test("after move at origin, gets piece at new pos defined at origin.", () => {
@@ -120,12 +128,12 @@ describe("getPlaceMoveAt", () => {
 describe("doMove(Move)", () => {
   test("first placement of some piece, piece is at origin", () => {
     let hiveWorld = new HiveWorld();
-    const someMove = [...hiveWorld.getPlaceMoves(Color.WHITE)][0];
+    const someMove = hiveWorld.findPlaceMoveAt(ORIGIN);
 
     hiveWorld.doMove(someMove);
 
     expect(hiveWorld.findPieceAt(ORIGIN)).toBe(someMove.piece);
-    expect(hiveWorld.getHand(Color.WHITE).size).toBe(10);
+    expect(hiveWorld.getHand(Color.BLACK).size).toBe(10);
   });
 });
 

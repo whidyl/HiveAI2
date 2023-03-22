@@ -7,7 +7,7 @@ export default class HiveWorld {
   }
 
   get currColor() {
-    return ((this.turn % 2) === 0) ? Color.WHITE : Color.BLACK;
+    return ((this.turn % 2) === 0) ? Color.BLACK : Color.WHITE;
   }
 
   #makeStartingHand(color) {
@@ -99,7 +99,7 @@ export class Move {
   }
 
   equals(otherMove) {
-    return Object.is(this.piece, otherMove.piece) && this.pos == otherMove.pos;
+    return Object.is(this.piece, otherMove.piece) && this.pos.equals(otherMove.pos);
   }
 }
 

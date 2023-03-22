@@ -9,7 +9,7 @@ describe("getPlaceMoves() and findPlaceMoveAt(HexPos)", () => {
 
         let placeMoves = hw.getPlaceMoves();
 
-        expect(placeMoves).toContainEqual({pos: ORIGIN, piece: whiteAnt});
+        expect(placeMoves).toContainEqual({pos: ORIGIN, piece: blackAnt});
     })
     
     test("place second ant is around origin.", () => {
@@ -19,9 +19,9 @@ describe("getPlaceMoves() and findPlaceMoveAt(HexPos)", () => {
         hw.doMove(firstMoves[0]);
         let secondMoves = hw.getPlaceMoves();
 
-        expect(secondMoves).toContainEqual({pos: ORIGIN.botLeft, piece: blackAnt});
-        expect(secondMoves).toContainEqual({pos: ORIGIN.topRight, piece: blackAnt});
-        expect(secondMoves).toContainEqual({pos: ORIGIN.right, piece: blackAnt});
+        expect(secondMoves).toContainEqual({pos: ORIGIN.botLeft, piece: whiteAnt});
+        expect(secondMoves).toContainEqual({pos: ORIGIN.topRight, piece: whiteAnt});
+        expect(secondMoves).toContainEqual({pos: ORIGIN.right, piece: whiteAnt});
         expect(secondMoves).not.toContainEqual({pos: ORIGIN, piece: firstMoves[0].piece});
     })
 
@@ -35,6 +35,17 @@ describe("getPlaceMoves() and findPlaceMoveAt(HexPos)", () => {
         expect(hw.findPlaceMoveAt(ORIGIN)).toBeUndefined();
         expect(hw.findPlaceMoveAt(ORIGIN.topLeft)).toBeUndefined();
     })
+
+    // test("after two place moves, third placements does not contain pos around white.", () => {
+    //     let hw = new HiveWorld();
+    //     const move1 = hw.findPlaceMoveAt(ORIGIN);
+    //     hw.doMove(move1);
+    //     const move2 = hw.findPlaceMoveAt(ORIGIN.topLeft);
+    //     hw.doMove(move2);
+
+    //     expect(hw.findPlaceMoveAt(ORIGIN)).toBeUndefined();
+    //     expect(hw.findPlaceMoveAt(ORIGIN.topLeft)).toBeUndefined();
+    // })
 
     test("third ant place moves, includes free tiles around last placed.", () => {
         let hw = new HiveWorld();
