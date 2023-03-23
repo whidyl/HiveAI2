@@ -52,9 +52,7 @@ export default class HiveWorld {
   }
 
   #getSecondTurnPlaceMoves() {
-    //Only on the second turn can a player place adjacent to opponent.
-    const adjPositions = this.#getAllAdjacentPositions();
-    const placeMoves = this.#getPlaceMovesFromPositionsForEachPieceInHand(adjPositions);
+    const placeMoves = this.#getPlaceMovesFromPositionsForEachPieceInHand(ORIGIN.adjacent);
     return placeMoves;
   }
 
@@ -110,8 +108,6 @@ export default class HiveWorld {
     else {
       return this.#getAfterSecondTurnPlaceMoves();
     }
-    //  this.#filterOutMovesAdjToOpponentPieces(this.#getUnblockedMovesAroundAllPieces());
-    
   }
 
   getAllPiecePositions() {
