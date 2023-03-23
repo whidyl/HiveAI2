@@ -51,25 +51,51 @@ export default class HiveWorld {
     return [...this.getHand(this.currColor)].map((piece) => new Move(piece, ORIGIN));
   }
 
-  getUnblockedMovesAroundAllPieces() {
-    let moves = [];
-    this.getHand(this.currColor).forEach(piece => {
-      for (const pos of this.getAllPiecePositions()) {
-        for (const potentialPos of pos.surrounding) {
-          if (this.findPieceAt(potentialPos) === undefined) {
-            moves.push(new Move(piece, potentialPos));
-          }
+  #getUnblockedMovesAroundAllPieces() {
+    
+    let positions = [];
+    for (const pos of this.getAllPiecePositions()) {
+      for (const potentialPos of pos.adjacent) {
+        if (this.findPieceAt(potentialPos) === undefined) {
+          positions.push(potentialPos);
         }
       }
+    }
+
+    let moves = [];
+    this.getHand(this.currColor).forEach(piece => {
+      for (const pos of positions) {
+        moves.push(new Move(piece, pos))
+      }
     });
+
     return moves;
   }
+
+  #filterOutMovesAdjToOpponentPieces(moves) {
+    const filtered = moves.filter(move => {
+      for (const adj of move.pos.adjacent) {
+        const adjPiece = this.findPieceAt(adj);
+        if (adjPiece !== undefined && adjPiece.color !== this.currColor) {
+          return false;
+        }
+      }
+      return true;
+    })
+    return filtered;
+  }
+
+  
 
   getPlaceMoves() {
     if (this.turn === 0)
       return this.getFirstPlaceMoves();
-    else
-      return this.getUnblockedMovesAroundAllPieces()
+    else if (this.turn === 1)
+      return this.#getUnblockedMovesAroundAllPieces();
+    else {
+      return this.#filterOutMovesAdjToOpponentPieces(this.#getUnblockedMovesAroundAllPieces());
+    }
+    //  this.#filterOutMovesAdjToOpponentPieces(this.#getUnblockedMovesAroundAllPieces());
     
   }
 
@@ -114,7 +140,7 @@ export class HexPos {
     return (this.x === other.x && this.y === other.y && this.z === other.z );
   }
 
-  get surrounding() {
+  get adjacent() {
     return [this.topLeft, this.topRight, this.left, this.right, this.botLeft, this.botRight];
   }
 

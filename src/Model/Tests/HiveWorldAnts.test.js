@@ -36,27 +36,28 @@ describe("getPlaceMoves() and findPlaceMoveAt(HexPos)", () => {
         expect(hw.findPlaceMoveAt(ORIGIN.topLeft)).toBeUndefined();
     })
 
-    // test("after two place moves, third placements does not contain pos around white.", () => {
-    //     let hw = new HiveWorld();
-    //     const move1 = hw.findPlaceMoveAt(ORIGIN);
-    //     hw.doMove(move1);
-    //     const move2 = hw.findPlaceMoveAt(ORIGIN.topLeft);
-    //     hw.doMove(move2);
+    test("white placed top left of black, allowed placements does not contain any around white.", () => {
+        let hw = new HiveWorld();
+        const blackMove = hw.findPlaceMoveAt(ORIGIN);
+        hw.doMove(blackMove);
+        const whiteMove = hw.findPlaceMoveAt(ORIGIN.topLeft);
+        hw.doMove(whiteMove);
 
-    //     expect(hw.findPlaceMoveAt(ORIGIN)).toBeUndefined();
-    //     expect(hw.findPlaceMoveAt(ORIGIN.topLeft)).toBeUndefined();
-    // })
+        expect(hw.findPlaceMoveAt(whiteMove.pos.botLeft)).toBeUndefined();
+        expect(hw.findPlaceMoveAt(whiteMove.pos.left)).toBeUndefined();
+        expect(hw.findPlaceMoveAt(whiteMove.pos.right)).toBeUndefined();
+        expect(hw.findPlaceMoveAt(blackMove.pos.right)).not.toBeUndefined();
+    })
 
-    test("third ant place moves, includes free tiles around last placed.", () => {
+    test("third ant place moves, includes free tiles around first placed (not touching opponent).", () => {
         let hw = new HiveWorld();
         const move1 = hw.findPlaceMoveAt(ORIGIN)
         hw.doMove(move1);
         const move2 = hw.findPlaceMoveAt(ORIGIN.topLeft);
         hw.doMove(move2);
         
-        expect(hw.findPlaceMoveAt(ORIGIN.left)).not.toBeUndefined();
-        expect(hw.findPlaceMoveAt(move2.pos.topRight)).not.toBeUndefined();
-        expect(hw.findPlaceMoveAt(move2.pos.botLeft)).not.toBeUndefined();
-        // expect(thirdMoves).not.toContainEqual(secondMove);
+        expect(hw.findPlaceMoveAt(move1.pos.right)).not.toBeUndefined();
+        expect(hw.findPlaceMoveAt(move1.pos.botRight)).not.toBeUndefined();
+        expect(hw.findPlaceMoveAt(move1.pos.botLeft)).not.toBeUndefined();
     })
 });
