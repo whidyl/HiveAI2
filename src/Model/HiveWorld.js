@@ -47,12 +47,25 @@ export default class HiveWorld {
     return color === Color.WHITE ? this.whiteHand : this.blackHand;
   }
 
-  getFirstPlaceMoves() {
+  #getFirstTurnPlaceMoves() {
     return [...this.getHand(this.currColor)].map((piece) => new Move(piece, ORIGIN));
   }
 
-  #getUnblockedMovesAroundAllPieces() {
-    
+  #getSecondTurnPlaceMoves() {
+    //Only on the second turn can a player place adjacent to opponent.
+    const adjPositions = this.#getAllAdjacentPositions();
+    const placeMoves = this.#getPlaceMovesFromPositionsForEachPieceInHand(adjPositions);
+    return placeMoves;
+  }
+
+  #getAfterSecondTurnPlaceMoves() {
+    const adjPositions = this.#getAllAdjacentPositions();
+    const nonAdjToOpponent = this.#filterOutPosAdjToOpponentPieces(adjPositions);
+    const placeMoves = this.#getPlaceMovesFromPositionsForEachPieceInHand(nonAdjToOpponent);
+    return placeMoves;
+  }
+
+  #getAllAdjacentPositions() {
     let positions = [];
     for (const pos of this.getAllPiecePositions()) {
       for (const potentialPos of pos.adjacent) {
@@ -61,20 +74,12 @@ export default class HiveWorld {
         }
       }
     }
-
-    let moves = [];
-    this.getHand(this.currColor).forEach(piece => {
-      for (const pos of positions) {
-        moves.push(new Move(piece, pos))
-      }
-    });
-
-    return moves;
+    return positions;
   }
 
-  #filterOutMovesAdjToOpponentPieces(moves) {
-    const filtered = moves.filter(move => {
-      for (const adj of move.pos.adjacent) {
+  #filterOutPosAdjToOpponentPieces(pos) {
+    const filtered = pos.filter(pos => {
+      for (const adj of pos.adjacent) {
         const adjPiece = this.findPieceAt(adj);
         if (adjPiece !== undefined && adjPiece.color !== this.currColor) {
           return false;
@@ -85,15 +90,25 @@ export default class HiveWorld {
     return filtered;
   }
 
+  #getPlaceMovesFromPositionsForEachPieceInHand(positions) {
+    let moves = [];
+    this.getHand(this.currColor).forEach(piece => {
+      for (const pos of positions) {
+        moves.push(new Move(piece, pos))
+      }
+    });
+    return moves;
+  }
+
   
 
   getPlaceMoves() {
     if (this.turn === 0)
-      return this.getFirstPlaceMoves();
+      return this.#getFirstTurnPlaceMoves();
     else if (this.turn === 1)
-      return this.#getUnblockedMovesAroundAllPieces();
+      return this.#getSecondTurnPlaceMoves();
     else {
-      return this.#filterOutMovesAdjToOpponentPieces(this.#getUnblockedMovesAroundAllPieces());
+      return this.#getAfterSecondTurnPlaceMoves();
     }
     //  this.#filterOutMovesAdjToOpponentPieces(this.#getUnblockedMovesAroundAllPieces());
     
