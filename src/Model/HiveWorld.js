@@ -141,42 +141,42 @@ export class Move {
 }
 
 export class HexPos {
-  constructor(x, y, z) {
-    this.x = x;
-    this.y = y;
-    this.z = z;
+  constructor(q, r, s) {
+    this.q = q;
+    this.r = r;
+    this.s = s;
   }
 
   equals(other) {
-    return (this.x === other.x && this.y === other.y && this.z === other.z );
+    return (this.q === other.q && this.r === other.r && this.s === other.s );
   }
 
   get adjacent() {
-    return [this.topLeft, this.topRight, this.left, this.right, this.botLeft, this.botRight];
+    return [this.topLeft, this.topRight, this.top, this.bot, this.botLeft, this.botRight];
   }
 
-  get left() {
-    return new HexPos(this.x - 1, this.y, this.z + 1);
+  get top() {
+    return new HexPos(this.q, this.r - 1, this.s + 1);
   }
 
-  get right() {
-    return new HexPos(this.x + 1, this.y, this.z - 1);
+  get bot() {
+    return new HexPos(this.q, this.r + 1, this.s - 1);
   }
 
   get topLeft() {
-    return new HexPos(this.x, this.y - 1, this.z + 1);
+    return new HexPos(this.q - 1, this.r, this.s + 1);
   }
 
   get botRight() {
-    return new HexPos(this.x, this.y + 1, this.z - 1);
+    return new HexPos(this.q + 1, this.r, this.s - 1);
   }
 
   get topRight() {
-    return new HexPos(this.x + 1, this.y - 1, this.z);
+    return new HexPos(this.q + 1, this.r - 1, this.s);
   }
 
   get botLeft() {
-    return new HexPos(this.x - 1, this.y + 1, this.z);
+    return new HexPos(this.q - 1, this.r + 1, this.s);
   }
 }
 

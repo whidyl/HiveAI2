@@ -56,7 +56,7 @@ describe("Move", () => {
       const piece = new Piece(PieceType.ANT, Color.BLACK);
 
       let move1 = new Move(piece, ORIGIN);
-      let move2 = new Move(piece, ORIGIN.left.right);
+      let move2 = new Move(piece, ORIGIN.top.bot);
 
       expect(move1.equals(move2)).toBe(true);
     });
@@ -84,8 +84,8 @@ describe("getPlaceMoves(Color)", () => {
     hw.getHand(Color.WHITE).forEach(piece => {
       expect(placeMoves).toContainEqual(new Move(piece, ORIGIN.topRight));
       expect(placeMoves).toContainEqual(new Move(piece, ORIGIN.topLeft));
-      expect(placeMoves).toContainEqual(new Move(piece, ORIGIN.left));
-      expect(placeMoves).toContainEqual(new Move(piece, ORIGIN.right));
+      expect(placeMoves).toContainEqual(new Move(piece, ORIGIN.top));
+      expect(placeMoves).toContainEqual(new Move(piece, ORIGIN.bot));
       expect(placeMoves).toContainEqual(new Move(piece, ORIGIN.botLeft))
       expect(placeMoves).toContainEqual(new Move(piece, ORIGIN.botRight));
     });
@@ -119,7 +119,7 @@ describe("getPlaceMoveAt", () => {
     const move = hw.findPlaceMoveAt(ORIGIN)
     hw.doMove(move);
 
-    const piece = hw.findPieceAt(ORIGIN.left);
+    const piece = hw.findPieceAt(ORIGIN.top);
 
     expect(piece).toBeUndefined();
   });
@@ -163,10 +163,10 @@ describe("HexPos", () => {
   test("Pos directions return expected coords", () => {
     const pos = new HexPos(0, 0, 0);
 
-    expect(pos.left.equals(new HexPos(-1, 0, 1))).toBe(true);
-    expect(pos.right.equals(new HexPos(1, 0, -1))).toBe(true);
-    expect(pos.topLeft.equals(new HexPos(0, -1, 1))).toBe(true);
-    expect(pos.botRight.equals(new HexPos(0, 1, -1))).toBe(true);
+    expect(pos.top.equals(new HexPos(0, -1, 1))).toBe(true);
+    expect(pos.bot.equals(new HexPos(0, 1, -1))).toBe(true);
+    expect(pos.topLeft.equals(new HexPos(-1, 0, 1))).toBe(true);
+    expect(pos.botRight.equals(new HexPos(1, 0, -1))).toBe(true);
     expect(pos.topRight.equals(new HexPos(1, -1, 0))).toBe(true);
     expect(pos.botLeft.equals(new HexPos(-1, 1, 0))).toBe(true);
   });
@@ -174,8 +174,8 @@ describe("HexPos", () => {
   test("Equal positions arrived by different routes are equal.", () => {
     const pos = new HexPos(0, 0, 0);
 
-    expect(pos.left.topRight).toStrictEqual(pos.right.topLeft.left);
-    expect(pos.botRight.botRight).toStrictEqual(pos.right.right.botLeft.botLeft);
+    expect(pos.top.topRight).toStrictEqual(pos.topRight.top);
+    expect(pos.botRight.botRight).toStrictEqual(pos.bot.botRight.botRight.top);
   });
 });
 
@@ -192,7 +192,7 @@ describe("findPlaceMoveAt", () => {
   test("first move, gets undefined beside origin.", () => {
     const hw = new HiveWorld();
     
-    const move = hw.findPlaceMoveAt(ORIGIN.left);
+    const move = hw.findPlaceMoveAt(ORIGIN.top);
 
     expect(move).toBeUndefined();
   });

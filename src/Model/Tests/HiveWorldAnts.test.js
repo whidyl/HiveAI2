@@ -21,7 +21,7 @@ describe("getPlaceMoves() and findPlaceMoveAt(HexPos)", () => {
 
         expect(secondMoves).toContainEqual({pos: ORIGIN.botLeft, piece: whiteAnt});
         expect(secondMoves).toContainEqual({pos: ORIGIN.topRight, piece: whiteAnt});
-        expect(secondMoves).toContainEqual({pos: ORIGIN.right, piece: whiteAnt});
+        expect(secondMoves).toContainEqual({pos: ORIGIN.top, piece: whiteAnt});
         expect(secondMoves).not.toContainEqual({pos: ORIGIN, piece: firstMoves[0].piece});
     })
 
@@ -44,9 +44,8 @@ describe("getPlaceMoves() and findPlaceMoveAt(HexPos)", () => {
         hw.doMove(whiteMove);
 
         expect(hw.findPlaceMoveAt(whiteMove.pos.botLeft)).toBeUndefined();
-        expect(hw.findPlaceMoveAt(whiteMove.pos.left)).toBeUndefined();
-        expect(hw.findPlaceMoveAt(whiteMove.pos.right)).toBeUndefined();
-        expect(hw.findPlaceMoveAt(blackMove.pos.right)).not.toBeUndefined();
+        expect(hw.findPlaceMoveAt(whiteMove.pos.bot)).toBeUndefined();
+        expect(hw.findPlaceMoveAt(whiteMove.pos.top)).toBeUndefined();
     })
 
     test("third ant place moves, includes free tiles around first placed (not touching opponent).", () => {
@@ -56,8 +55,8 @@ describe("getPlaceMoves() and findPlaceMoveAt(HexPos)", () => {
         const move2 = hw.findPlaceMoveAt(ORIGIN.topLeft);
         hw.doMove(move2);
         
-        expect(hw.findPlaceMoveAt(move1.pos.right)).not.toBeUndefined();
+        expect(hw.findPlaceMoveAt(move1.pos.topRight)).not.toBeUndefined();
         expect(hw.findPlaceMoveAt(move1.pos.botRight)).not.toBeUndefined();
-        expect(hw.findPlaceMoveAt(move1.pos.botLeft)).not.toBeUndefined();
+        expect(hw.findPlaceMoveAt(move1.pos.bot)).not.toBeUndefined();
     })
 });
