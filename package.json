@@ -2,7 +2,6 @@
   "name": "create-react-app-tailwind",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
   "dependencies": {
     "@testing-library/jest-dom": "5.14.1",
     "@testing-library/react": "12.1.1",

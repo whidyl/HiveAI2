@@ -139,20 +139,20 @@ describe("doMove(Move)", () => {
 
 describe("HexPos", () => {
   test.each([
-    [0, 0, 0],
-    [-5, -3, -1],
-    [1, 2, 3]
-  ])("Two Pos constructed with same coords are equal", (x, y, z) => {
-    const pos1 = new HexPos(x, y, z);
-    const pos2 = new HexPos(x, y, z);
+    [0, 0],
+    [-5, -3],
+    [1, 2]
+  ])("Two Pos constructed with same coords are equal", (x, y) => {
+    const pos1 = new HexPos(x, y);
+    const pos2 = new HexPos(x, y);
 
     expect(pos1.equals(pos2)).toBe(true);
   });
 
   test("Two Pos constructed with diff coords are equal", () => {
-    const pos1 = new HexPos(5, 0, 0);
-    const pos2 = new HexPos(0, 5, 0);
-    const pos3 = new HexPos(0, 0, 5);
+    const pos1 = new HexPos(5, 0);
+    const pos2 = new HexPos(0, 5);
+    const pos3 = new HexPos(0, 0);
 
     expect(pos1.equals(pos2)).toBe(false);
     expect(pos2.equals(pos3)).toBe(false);
@@ -161,14 +161,14 @@ describe("HexPos", () => {
   });
 
   test("Pos directions return expected coords", () => {
-    const pos = new HexPos(0, 0, 0);
+    const pos = new HexPos(0, 0);
 
-    expect(pos.top.equals(new HexPos(0, -1, 1))).toBe(true);
-    expect(pos.bot.equals(new HexPos(0, 1, -1))).toBe(true);
-    expect(pos.topLeft.equals(new HexPos(-1, 0, 1))).toBe(true);
-    expect(pos.botRight.equals(new HexPos(1, 0, -1))).toBe(true);
-    expect(pos.topRight.equals(new HexPos(1, -1, 0))).toBe(true);
-    expect(pos.botLeft.equals(new HexPos(-1, 1, 0))).toBe(true);
+    expect(pos.top.equals(new HexPos(0, -1))).toBe(true);
+    expect(pos.bot.equals(new HexPos(0, 1))).toBe(true);
+    expect(pos.topLeft.equals(new HexPos(-1, 0))).toBe(true);
+    expect(pos.botRight.equals(new HexPos(1, 0))).toBe(true);
+    expect(pos.topRight.equals(new HexPos(1, -1))).toBe(true);
+    expect(pos.botLeft.equals(new HexPos(-1, 1))).toBe(true);
   });
 
   test("Equal positions arrived by different routes are equal.", () => {

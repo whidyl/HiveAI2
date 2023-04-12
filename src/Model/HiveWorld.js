@@ -1,9 +1,16 @@
 export default class HiveWorld {
-  constructor() {
-    this.blackHand = this.#makeStartingHand(Color.BLACK);
-    this.whiteHand = this.#makeStartingHand(Color.WHITE);
-    this.board = new Map();
-    this.turn = 0;
+  constructor(copyFrom=null) {
+    if (copyFrom !== null) {
+      this.blackHand = copyFrom.blackHand;
+      this.whiteHand = copyFrom.whiteHand;
+      this.board = copyFrom.board;
+      this.turn = copyFrom.turn;
+    } else {
+      this.blackHand = this.#makeStartingHand(Color.BLACK);
+      this.whiteHand = this.#makeStartingHand(Color.WHITE);
+      this.board = new Map();
+      this.turn = 0;
+    }
   }
 
   get currColor() {
@@ -141,14 +148,13 @@ export class Move {
 }
 
 export class HexPos {
-  constructor(q, r, s) {
+  constructor(q, r) {
     this.q = q;
     this.r = r;
-    this.s = s;
   }
 
   equals(other) {
-    return (this.q === other.q && this.r === other.r && this.s === other.s );
+    return (this.q === other.q && this.r === other.r );
   }
 
   get adjacent() {
@@ -156,27 +162,27 @@ export class HexPos {
   }
 
   get top() {
-    return new HexPos(this.q, this.r - 1, this.s + 1);
+    return new HexPos(this.q, this.r - 1);
   }
 
   get bot() {
-    return new HexPos(this.q, this.r + 1, this.s - 1);
+    return new HexPos(this.q, this.r + 1);
   }
 
   get topLeft() {
-    return new HexPos(this.q - 1, this.r, this.s + 1);
+    return new HexPos(this.q - 1, this.r);
   }
 
   get botRight() {
-    return new HexPos(this.q + 1, this.r, this.s - 1);
+    return new HexPos(this.q + 1, this.r);
   }
 
   get topRight() {
-    return new HexPos(this.q + 1, this.r - 1, this.s);
+    return new HexPos(this.q + 1, this.r - 1);
   }
 
   get botLeft() {
-    return new HexPos(this.q - 1, this.r + 1, this.s);
+    return new HexPos(this.q - 1, this.r + 1);
   }
 }
 
