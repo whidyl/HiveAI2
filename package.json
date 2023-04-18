@@ -27,7 +27,7 @@
     "env:prod": "cross-env NODE_ENV=production",
     "react-scripts:start": "sleep 5 && react-scripts start",
     "react-scripts:build": "react-scripts build",
-    "start": "run-p env:dev watch:css react-scripts:start",
+    "start": "export NODE_OPTIONS=--openssl-legacy-provider; run-p env:dev watch:css react-scripts:start",
     "build": "run-s env:prod build:css react-scripts:build",
     "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!react-hexgrid)/'",
     "eject": "react-scripts eject"

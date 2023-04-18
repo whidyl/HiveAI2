@@ -3,6 +3,7 @@ import HiveWorld, { Color, ORIGIN, PieceType } from "../HiveWorld.js";
 describe("getPlaceMoves() and findPlaceMoveAt(HexPos)", () => {
     const whiteAnt = {type: PieceType.ANT, color: Color.WHITE};
     const blackAnt = {type: PieceType.ANT, color: Color.BLACK};
+    const blackQueen = {type: PieceType.QUEEN, color: Color.BLACK};
 
     test("place ant is in first place moves.", () => {
         let hw = new HiveWorld();
@@ -10,6 +11,15 @@ describe("getPlaceMoves() and findPlaceMoveAt(HexPos)", () => {
         let placeMoves = hw.getPlaceMoves();
 
         expect(placeMoves).toContainEqual({pos: ORIGIN, piece: blackAnt});
+    })
+
+    test("first place moves has 2: (queen and ant)", () => {
+        let hw = new HiveWorld();
+
+        let placeMoves = hw.getPlaceMoves();
+
+        expect(placeMoves).toContainEqual({pos: ORIGIN, piece: blackQueen})
+        expect(placeMoves.length).toBe(2);
     })
     
     test("place second ant is around origin.", () => {
@@ -60,3 +70,28 @@ describe("getPlaceMoves() and findPlaceMoveAt(HexPos)", () => {
         expect(hw.findPlaceMoveAt(move1.pos.bot)).not.toBeUndefined();
     })
 });
+
+describe("getPieces(Color)", () => {
+    test("After first place move, gets single piece", () => {
+        let hw = new HiveWorld();
+        const move1 = hw.findPlaceMoveAt(ORIGIN);
+        hw.doMove(move1);
+
+        const pieces = hw.getPieces(Color.BLACK);
+
+        expect(pieces.length).toBe(1);
+    })
+})
+
+test("Iterate with dictionary", () => {
+    let hw = new HiveWorld();
+    const move1 = hw.findPlaceMoveAt(ORIGIN)
+    hw.doMove(move1);
+    const move2 = hw.findPlaceMoveAt(ORIGIN.topLeft);
+    hw.doMove(move2);
+
+    hw.board.forEach((piece, pos) => {
+        expect(piece.type).not.toBeUndefined();
+        expect(pos.r).not.toBeUndefined();
+    });
+})

@@ -20,13 +20,6 @@ export default class HiveWorld {
   #makeStartingHand(color) {
     return new Set([
       new Piece(PieceType.QUEEN, color),
-      new Piece(PieceType.SPIDER, color),
-      new Piece(PieceType.SPIDER, color),
-      new Piece(PieceType.BEETLE, color),
-      new Piece(PieceType.BEETLE, color),
-      new Piece(PieceType.GRASSHOPPER, color),
-      new Piece(PieceType.GRASSHOPPER, color),
-      new Piece(PieceType.GRASSHOPPER, color),
       new Piece(PieceType.ANT, color),
       new Piece(PieceType.ANT, color),
       new Piece(PieceType.ANT, color),
@@ -46,6 +39,17 @@ export default class HiveWorld {
     return this.board.get(Array.from(this.board.keys()).find(p => p.equals(pos)));
   }
 
+  getPieces(color) {
+    let result = [];
+    this.getAllPiecePositions().forEach(pos => {
+      const piece = this.board.get(pos);
+      if (piece.color === color) {
+        result.push(piece);
+      }
+    });
+    return result;
+  }
+
   isEmpty() {
     return true;
   }
@@ -54,8 +58,21 @@ export default class HiveWorld {
     return color === Color.WHITE ? this.whiteHand : this.blackHand;
   }
 
+  getFirstOfEachPieceInHand() {
+    let result = []
+    let includedType = new Set();
+    this.getHand(this.currColor).forEach(piece => {
+      if(!includedType.has(piece.type)) {
+        includedType.add(piece.type);
+        result.push(piece);
+      }
+    })
+    return result;
+  }
+
   #getFirstTurnPlaceMoves() {
-    return [...this.getHand(this.currColor)].map((piece) => new Move(piece, ORIGIN));
+    return [...this.getFirstOfEachPieceInHand()]
+              .map(piece => new Move(piece, ORIGIN));
   }
 
   #getSecondTurnPlaceMoves() {
@@ -97,7 +114,7 @@ export default class HiveWorld {
 
   #getPlaceMovesFromPositionsForEachPieceInHand(positions) {
     let moves = [];
-    this.getHand(this.currColor).forEach(piece => {
+    this.getFirstOfEachPieceInHand().forEach(piece => {
       for (const pos of positions) {
         moves.push(new Move(piece, pos))
       }

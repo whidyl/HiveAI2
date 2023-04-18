@@ -22,9 +22,6 @@ describe("getHand(Color)", () => {
       const handArr = [...hiveWorld.getHand(color)];
 
       expect(countPieces(handArr, PieceType.QUEEN)).toBe(1);
-      expect(countPieces(handArr, PieceType.SPIDER)).toBe(2);
-      expect(countPieces(handArr, PieceType.BEETLE)).toBe(2);
-      expect(countPieces(handArr, PieceType.GRASSHOPPER)).toBe(3);
       expect(countPieces(handArr, PieceType.ANT)).toBe(3);
     }
   );
@@ -133,7 +130,7 @@ describe("doMove(Move)", () => {
     hiveWorld.doMove(someMove);
 
     expect(hiveWorld.findPieceAt(ORIGIN)).toBe(someMove.piece);
-    expect(hiveWorld.getHand(Color.BLACK).size).toBe(10);
+    expect(hiveWorld.getHand(Color.BLACK).size).toBe(3);
   });
 });
 
