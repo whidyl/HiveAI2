@@ -23,6 +23,13 @@ export default class HiveWorld {
       new Piece(PieceType.ANT, color),
       new Piece(PieceType.ANT, color),
       new Piece(PieceType.ANT, color),
+      new Piece(PieceType.ANT, color),
+      new Piece(PieceType.ANT, color),
+      new Piece(PieceType.ANT, color),
+      new Piece(PieceType.ANT, color),
+      new Piece(PieceType.ANT, color),
+      new Piece(PieceType.ANT, color),
+      new Piece(PieceType.ANT, color),
     ]);
   }
 
@@ -32,10 +39,11 @@ export default class HiveWorld {
     this.turn++;
   }
 
+  // returns piece if it exists, otherwise undefined
   findPieceAt(pos) {
-    const pieceWithPos = this.board.get(pos)
-    if (pieceWithPos)
-      return pieceWithPos;
+    // const pieceWithPos = this.board.get(pos)
+    // if (pieceWithPos)
+    //   return pieceWithPos;
     return this.board.get(Array.from(this.board.keys()).find(p => p.equals(pos)));
   }
 
@@ -56,6 +64,15 @@ export default class HiveWorld {
 
   getHand(color) {
     return color === Color.WHITE ? this.whiteHand : this.blackHand;
+  }
+
+  getQueenInHand() {
+    for (const piece of this.getHand(this.currColor)) {
+      if (piece.type === PieceType.QUEEN) {
+        return piece;
+      }
+    }
+    return undefined;
   }
 
   getFirstOfEachPieceInHand() {
@@ -122,16 +139,40 @@ export default class HiveWorld {
     return moves;
   }
 
-  
-
   getPlaceMoves() {
     if (this.turn === 0)
       return this.#getFirstTurnPlaceMoves();
     else if (this.turn === 1)
       return this.#getSecondTurnPlaceMoves();
-    else {
-      return this.#getAfterSecondTurnPlaceMoves();
+    
+
+    const placeMoves = this.#getAfterSecondTurnPlaceMoves();
+    if (this.turn >= 6) {
+      const queen = this.getQueenInHand();
+      if (queen !== undefined) {
+        return placeMoves.filter(move => move.piece.type === PieceType.QUEEN);
+      }
     }
+    return placeMoves;
+    
+  }
+
+  getPieceMoves(pos) {
+    // const moves = [];
+    // for (const adj of pos.adjacent) {
+    //   const piece = this.findPieceAt(adj);
+    //   if (this.findPieceAt(adj) !== undefined && this.posIsAdjToAPiece(adj) && !moves.includes(pos)) {
+        
+    //   }
+    // }
+    return [];
+  }
+
+  isPosFreeAndAdjToAnyPiece(pos) {
+    // pos.adjacent.forEach(pos => {
+    //   if (this.findPieceAt(pos))
+    // })
+
   }
 
   getAllPiecePositions() {

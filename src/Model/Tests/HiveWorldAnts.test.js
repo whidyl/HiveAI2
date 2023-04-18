@@ -1,5 +1,47 @@
 import HiveWorld, { Color, ORIGIN, PieceType } from "../HiveWorld.js";
 
+function pickRandomAntMove(hw) {
+    const antMoves = hw.getPlaceMoves().filter(move => move.piece.type === PieceType.ANT);
+    return getRandomItemFromArray(antMoves);
+
+}
+
+function pickRandomQueenMove(hw) {
+    const antMoves = hw.getPlaceMoves().filter(move => move.piece.type === PieceType.QUEEN);
+    return getRandomItemFromArray(antMoves);
+
+}
+
+function getRandomItemFromArray(array) {
+    const randomIndex = Math.floor(Math.random() * array.length);
+    return array[randomIndex];
+}
+
+describe("pickRandomAntMove", () => {
+    test("one move: gets single move", () => {
+        const hw = new HiveWorld();
+     
+        const antMove = pickRandomAntMove(hw);
+     
+        expect(antMove.pos.equals(ORIGIN)).toBe(true);
+     })
+
+     test("pickRandomAntMove2", () => {
+        const hw = new HiveWorld();
+     
+        hw.doMove(pickRandomAntMove(hw));
+        hw.doMove(pickRandomAntMove(hw));
+        hw.doMove(pickRandomAntMove(hw));
+        hw.doMove(pickRandomAntMove(hw));
+     
+        expect(hw.getAllPiecePositions().length).toBe(4);
+     })
+})
+
+
+
+
+
 describe("getPlaceMoves() and findPlaceMoveAt(HexPos)", () => {
     const whiteAnt = {type: PieceType.ANT, color: Color.WHITE};
     const blackAnt = {type: PieceType.ANT, color: Color.BLACK};
@@ -20,6 +62,23 @@ describe("getPlaceMoves() and findPlaceMoveAt(HexPos)", () => {
 
         expect(placeMoves).toContainEqual({pos: ORIGIN, piece: blackQueen})
         expect(placeMoves.length).toBe(2);
+    })
+
+    test("after turn 6 without queen placed: can only place queen", () => {
+        let hw = new HiveWorld();
+
+        hw.doMove(pickRandomAntMove(hw));
+        hw.doMove(pickRandomAntMove(hw));
+        hw.doMove(pickRandomAntMove(hw));
+        hw.doMove(pickRandomAntMove(hw));
+        hw.doMove(pickRandomAntMove(hw));
+        hw.doMove(pickRandomAntMove(hw));
+
+        const placeMoves= hw.getPlaceMoves();
+
+        expect(hw.getAllPiecePositions().length).toBe(6);
+        expect(hw.turn).toBe(6);
+        expect(placeMoves.every(move => move.piece.type === PieceType.QUEEN)).toBe(true);
     })
     
     test("place second ant is around origin.", () => {
@@ -81,6 +140,31 @@ describe("getPieces(Color)", () => {
 
         expect(pieces.length).toBe(1);
     })
+})
+
+describe("getPieceMoves(Pos)", () => {
+    test("move opponent piece, returns empty", () => {
+        let hw = new HiveWorld();
+        const move = hw.findPlaceMoveAt(ORIGIN)
+        hw.doMove(move);
+
+        const moves = hw.getPieceMoves(ORIGIN);
+
+        expect(moves.length).toBe(0);
+    })
+
+    test("move ant after queen moved: returns expected moves", () => {
+        let hw = new HiveWorld();
+        hw.doMove(pickRandomQueenMove(hw));
+        hw.doMove(hw.findPlaceMoveAt(ORIGIN.topLeft));
+
+        hw.doMove(hw.findPlaceMoveAt(ORIGIN.botRight));
+        const pieceMoves = hw.getPieceMoves(ORIGIN.topLeft);
+
+        expect(pieceMoves.length).toBe(9);
+    })
+
+    
 })
 
 test("Iterate with dictionary", () => {
