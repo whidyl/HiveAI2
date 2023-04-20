@@ -10,6 +10,7 @@ import HiveWorld, {
 export default function HiveGame() {
 	const [hiveWorld, setHiveWorld] = useState(new HiveWorld());
 	const [placeMoves, setPlaceMoves] = useState([]);
+	const [pieceMoves, setPieceMoves] = useState([]);
 	const [blackAnts, setBlackAnts] = useState([]);
 	const [whiteAnts, setWhiteAnts] = useState([]);
 	const [blackQueen, setBlackQueen] = useState();
@@ -20,10 +21,12 @@ export default function HiveGame() {
 		hiveWorld.doMove(move);
 		setHiveWorld(new HiveWorld(hiveWorld));
 		setPlaceMoves([]);
+		setPieceMoves([]);
 
 		let blackAnts = [];
 		let whiteAnts = [];
 		hiveWorld.board.forEach((piece, pos) => {
+			pos = HexPos.fromString(pos);
 			if (piece.type === PieceType.ANT && piece.color === Color.BLACK)
 				blackAnts.push({ pos: pos, piece: piece });
 			else if (piece.type === PieceType.ANT && piece.color === Color.WHITE)
@@ -39,9 +42,16 @@ export default function HiveGame() {
 	};
 
 	const getValidPlaceMoves = (pieceType) => {
-		// Update hiveWorld with the new move
+		setPieceMoves([]);
 		setPlaceMoves(
 			hiveWorld.getPlaceMoves().filter((move) => move.piece.type === pieceType)
+		);
+	};
+
+	const getValidPieceMoves = (pos) => {
+		setPlaceMoves([]);
+		setPieceMoves(
+			hiveWorld.getPieceMoves(pos)
 		);
 	};
 
@@ -52,7 +62,18 @@ export default function HiveGame() {
 					{placeMoves.map((move) => (
 						<Hexagon
 							style={{ fill: 'green' }}
-							key={`${move.pos.q}, ${move.pos.r}`}
+							key={`g${move.pos.toString()}`}
+							q={move.pos.q}
+							r={move.pos.r}
+							s={0}
+							onClick={() => handleMove(move)}
+						/>
+					))}
+
+					{pieceMoves.map((move) => (
+						<Hexagon
+							style={{ fill: 'blue' }}
+							key={`b${move.pos.toString()}`}
 							q={move.pos.q}
 							r={move.pos.r}
 							s={0}
@@ -63,10 +84,11 @@ export default function HiveGame() {
 					{blackAnts.map((move) => (
 						<Hexagon
 							style={{ fill: 'black' }}
-							key={`${move.pos.q}, ${move.pos.r}`}
+							key={`blk${move.pos.toString()}`}
 							q={move.pos.q}
 							r={move.pos.r}
 							s={0}
+							onClick={() => getValidPieceMoves(move.pos)}
 						>
 							<Text style={{ fill: 'white', fontSize: 5 }}> Ant </Text>
 						</Hexagon>
@@ -75,10 +97,11 @@ export default function HiveGame() {
 					{whiteAnts.map((move) => (
 						<Hexagon
 							style={{ fill: 'grey' }}
-							key={`${move.pos.q}, ${move.pos.r}`}
+							key={`w${move.pos.toString()}`}
 							q={move.pos.q}
 							r={move.pos.r}
 							s={0}
+							onClick={() => getValidPieceMoves(move.pos)}
 						>
 							<Text style={{ fill: 'white', fontSize: 5 }}> Ant </Text>
 						</Hexagon>
@@ -86,7 +109,7 @@ export default function HiveGame() {
 					{whiteQueen ? (
 						<Hexagon
 							style={{ fill: 'grey' }}
-							key={`${whiteQueen.pos.q}, ${whiteQueen.pos.r}`}
+							key={`wq${whiteQueen.pos.toString()}`}
 							q={whiteQueen.pos.q}
 							r={whiteQueen.pos.r}
 							s={0}
@@ -100,7 +123,7 @@ export default function HiveGame() {
 					{blackQueen ? (
 						<Hexagon
 							style={{ fill: 'black' }}
-							key={`${blackQueen.pos.q}, ${blackQueen.pos.r}`}
+							key={`bq${blackQueen.pos.toString()}`}
 							q={blackQueen.pos.q}
 							r={blackQueen.pos.r}
 							s={0}

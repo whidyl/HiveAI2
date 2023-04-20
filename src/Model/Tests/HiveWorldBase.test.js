@@ -195,6 +195,19 @@ describe("findPlaceMoveAt", () => {
   });
 })
 
+describe("isPosFreeAndAdjToAnyPiece", () => {
+  test("first move, true next to it but not on it.", () => {
+    const hw = new HiveWorld();
+    
+    hw.doMove(hw.findPlaceMoveAt(ORIGIN));
+
+    expect(hw.isPosFreeAndAdjToAnyPieceExcluding(ORIGIN.botLeft, ORIGIN.botLeft)).toBe(true);
+    expect(hw.isPosFreeAndAdjToAnyPieceExcluding(ORIGIN.botLeft, ORIGIN)).toBe(false);
+    expect(hw.isPosFreeAndAdjToAnyPieceExcluding(ORIGIN, ORIGIN.top.top)).toBe(false);
+    expect(hw.isPosFreeAndAdjToAnyPieceExcluding(ORIGIN.botLeft.bot, ORIGIN.top.top)).toBe(false);
+  })
+})
+
 describe("getAllPiecePositions()", () => {
   test("after first move, gets single origin pos.", () => {
     const hw = new HiveWorld();

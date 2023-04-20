@@ -1,4 +1,4 @@
-import HiveWorld, { Color, ORIGIN, PieceType } from "../HiveWorld.js";
+import HiveWorld, { Color, HexPos, ORIGIN, PieceType } from "../HiveWorld.js";
 
 function pickRandomAntMove(hw) {
     const antMoves = hw.getPlaceMoves().filter(move => move.piece.type === PieceType.ANT);
@@ -52,7 +52,7 @@ describe("getPlaceMoves() and findPlaceMoveAt(HexPos)", () => {
 
         let placeMoves = hw.getPlaceMoves();
 
-        expect(placeMoves).toContainEqual({pos: ORIGIN, piece: blackAnt});
+        expect(placeMoves).toContainEqual({pos: ORIGIN, piece: blackAnt, prev: null});
     })
 
     test("first place moves has 2: (queen and ant)", () => {
@@ -60,7 +60,7 @@ describe("getPlaceMoves() and findPlaceMoveAt(HexPos)", () => {
 
         let placeMoves = hw.getPlaceMoves();
 
-        expect(placeMoves).toContainEqual({pos: ORIGIN, piece: blackQueen})
+        expect(placeMoves).toContainEqual({pos: ORIGIN, piece: blackQueen, prev: null})
         expect(placeMoves.length).toBe(2);
     })
 
@@ -88,10 +88,10 @@ describe("getPlaceMoves() and findPlaceMoveAt(HexPos)", () => {
         hw.doMove(firstMoves[0]);
         let secondMoves = hw.getPlaceMoves();
 
-        expect(secondMoves).toContainEqual({pos: ORIGIN.botLeft, piece: whiteAnt});
-        expect(secondMoves).toContainEqual({pos: ORIGIN.topRight, piece: whiteAnt});
-        expect(secondMoves).toContainEqual({pos: ORIGIN.top, piece: whiteAnt});
-        expect(secondMoves).not.toContainEqual({pos: ORIGIN, piece: firstMoves[0].piece});
+        expect(secondMoves).toContainEqual({pos: ORIGIN.botLeft, piece: whiteAnt, prev: null});
+        expect(secondMoves).toContainEqual({pos: ORIGIN.topRight, piece: whiteAnt, prev: null});
+        expect(secondMoves).toContainEqual({pos: ORIGIN.top, piece: whiteAnt, prev: null});
+        expect(secondMoves).not.toContainEqual({pos: ORIGIN, piece: firstMoves[0].piece, prev: null});
     })
 
     test("place third ant does not include blocked tiles.", () => {
@@ -161,10 +161,8 @@ describe("getPieceMoves(Pos)", () => {
         hw.doMove(hw.findPlaceMoveAt(ORIGIN.botRight));
         const pieceMoves = hw.getPieceMoves(ORIGIN.topLeft);
 
-        expect(pieceMoves.length).toBe(9);
+        expect(pieceMoves.length).toBe(7);
     })
-
-    
 })
 
 test("Iterate with dictionary", () => {
@@ -176,6 +174,6 @@ test("Iterate with dictionary", () => {
 
     hw.board.forEach((piece, pos) => {
         expect(piece.type).not.toBeUndefined();
-        expect(pos.r).not.toBeUndefined();
+        expect(HexPos.fromString(pos).r).not.toBeUndefined();
     });
 })
