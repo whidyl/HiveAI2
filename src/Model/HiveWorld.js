@@ -144,6 +144,7 @@ export default class HiveWorld {
 		});
 		return moves;
 	}
+	
 
 	getPlaceMoves() {
 		if (this.turn === 0) return this.#getFirstTurnPlaceMoves();
@@ -162,6 +163,13 @@ export default class HiveWorld {
 	getPieceMoves(pos) {
 		if (this.findPieceAt(pos).color !== this.currColor) return [];
 
+		for (const adj of pos.adjacent) {
+			const piece = this.findPieceAt(adj);
+			if (piece && !this.#isBoardConnectedAfterMove(new Move(this.findPieceAt(pos), adj, pos))) {
+				return [];
+			}
+		}
+
 		const moves = [];
 		const frontier = [pos];
 		const enteredFrontier = new Set();
@@ -169,22 +177,63 @@ export default class HiveWorld {
 
 		while (frontier.length > 0) {
 			const current = frontier.pop();
+			const potentialMove = new Move(this.findPieceAt(pos), current, pos)
 			
 			if (!current.equals(pos))
-				moves.push(new Move(this.findPieceAt(pos), current, pos));
+				moves.push(potentialMove);
 
 			for (const adj of current.adjacent) {
 				if (
 					this.isPosFreeAndAdjToAnyPieceExcluding(adj, pos) &&
-					!enteredFrontier.has(adj.toString())
+					!enteredFrontier.has(adj.toString()) &&
+					this.#canSlideBetween(current, adj)
 				) {
 					frontier.push(adj);
-					enteredFrontier.add(current.toString());
+					enteredFrontier.add(adj.toString());
 				}
 			}
 		}
 
 		return moves;
+	}
+
+	#canSlideBetween(from, to) {
+		const fromAdjBlocked = from.adjacent.filter(pos => this.findPieceAt(pos));
+		const toAdjBlocked = to.adjacent.filter(pos => this.findPieceAt(pos));
+		const commonNeighbors = fromAdjBlocked.filter(fromPos => toAdjBlocked.some(toPos => fromPos.equals(toPos)));
+	
+		if (commonNeighbors.length >= 2) {
+			return false;
+		}
+		return true;
+	}
+
+	#isBoardConnectedAfterMove(move) {
+		//temporarily remove piece
+		this.board.delete(move.prev.toString());
+
+		const positions = this.getAllPiecePositions();
+		let frontier = [positions[0]];
+		let enteredFrontier = new Set();
+
+		let connectedCount = 0;
+		while (frontier.length > 0) {
+			const current = frontier.pop();
+			
+			for (const adj of current.adjacent) {
+				if (this.findPieceAt(adj) && !enteredFrontier.has(adj.toString())) {
+					frontier.push(adj);
+					enteredFrontier.add(adj.toString());
+					connectedCount += 1;
+				}
+			}
+		}
+
+		console.log(connectedCount);
+
+		this.board.set(move.prev.toString(), move.piece);
+
+		return connectedCount === positions.length;
 	}
 
 	isPosFreeAndAdjToAnyPieceExcluding(pos, excluding) {
