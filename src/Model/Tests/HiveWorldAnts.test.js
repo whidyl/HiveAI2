@@ -156,12 +156,24 @@ describe("getPieceMoves(Pos)", () => {
     test("move ant after queen moved: returns expected moves", () => {
         let hw = new HiveWorld();
         hw.doMove(pickRandomQueenMove(hw));
-        hw.doMove(hw.findPlaceMoveAt(ORIGIN.topLeft));
+        hw.doMove(hw.findAntPlaceMoveAt(ORIGIN.topLeft));
 
         hw.doMove(hw.findPlaceMoveAt(ORIGIN.botRight));
         const pieceMoves = hw.getPieceMoves(ORIGIN.topLeft);
 
+        expect(hw.size).toBe(3);
         expect(pieceMoves.length).toBe(7);
+    })
+
+    test("move queen after ant by its side: includes moves around ant", () => {
+        let hw = new HiveWorld();
+        hw.doMove(pickRandomQueenMove(hw));
+        hw.doMove(hw.findPlaceMoveAt(ORIGIN.topLeft));
+
+        const pieceMoves = hw.getPieceMoves(ORIGIN);
+
+        expect(hw.findPieceAt(ORIGIN).type).toBe(PieceType.QUEEN);
+        expect(pieceMoves.length).toBe(5);
     })
 })
 
@@ -175,5 +187,43 @@ test("Iterate with dictionary", () => {
     hw.board.forEach((piece, pos) => {
         expect(piece.type).not.toBeUndefined();
         expect(HexPos.fromString(pos).r).not.toBeUndefined();
+    });
+})
+
+describe("IsGoalState(Color)", () => {
+    test("not goal state either, returns false", () => {
+        let hw = new HiveWorld();
+        hw.doMove(pickRandomQueenMove(hw));
+        hw.doMove(hw.findPlaceMoveAt(ORIGIN.topRight));
+
+        expect(hw.isGoalState(Color.BLACK)).toBe(false);
+        expect(hw.isGoalState(Color.WHITE)).toBe(false);
+    })
+})
+
+describe("undoMove()", () => {
+    test("make and undo 1 move, board is empty and hand is full", () => {
+        let hw = new HiveWorld();
+        const move = pickRandomQueenMove(hw);
+        hw.doMove(move);
+
+        hw.undoMove(move);
+
+        expect(hw.getAllPiecePositions().length).toBe(0);
+        expect(hw.getHand(Color.BLACK).size).toBe(11);
+    });
+
+    test("make and undo 2 move, board is empty and hand is full", () => {
+        let hw = new HiveWorld();
+        const move1 = pickRandomQueenMove(hw);
+        hw.doMove(move1);
+        const move2 = pickRandomQueenMove(hw);
+        hw.doMove(move2);
+
+        hw.undoMove(move1);
+        hw.undoMove(move2);
+
+        expect(hw.getAllPiecePositions().length).toBe(0);
+        expect(hw.getHand(Color.BLACK).size).toBe(11);
     });
 })

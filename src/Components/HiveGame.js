@@ -6,6 +6,8 @@ import HiveWorld, {
 	PieceType,
 	Color,
 } from '../Model/HiveWorld.js';
+import { RandomHiveAI } from '../Model/RandomAI.js';
+import { MinMaxHiveAI } from '../Model/MinMaxAI.js';
 
 export default function HiveGame() {
 	const [hiveWorld, setHiveWorld] = useState(new HiveWorld());
@@ -15,10 +17,13 @@ export default function HiveGame() {
 	const [whiteAnts, setWhiteAnts] = useState([]);
 	const [blackQueen, setBlackQueen] = useState();
 	const [whiteQueen, setWhiteQueen] = useState();
+	const [winner, setWinner] = useState(null);
 
 	const handleMove = (move) => {
 		// Update hiveWorld with the new move
 		hiveWorld.doMove(move);
+		const ai = new MinMaxHiveAI(hiveWorld);
+		ai.playMove();
 		setHiveWorld(new HiveWorld(hiveWorld));
 		setPlaceMoves([]);
 		setPieceMoves([]);
@@ -36,6 +41,11 @@ export default function HiveGame() {
 			else if (piece.type === PieceType.QUEEN && piece.color === Color.BLACK)
 				setBlackQueen({ pos: pos, piece: piece });
 		});
+
+		if (hiveWorld.isGoalState(Color.BLACK))
+			setWinner(Color.BLACK);
+		if (hiveWorld.isGoalState(Color.WHITE))
+			setWinner(Color.WHITE);
 
 		setBlackAnts(blackAnts);
 		setWhiteAnts(whiteAnts);
@@ -58,7 +68,7 @@ export default function HiveGame() {
 	return (
 		<div>
 			<HexGrid width={1200} height={800}>
-				<Layout size={{ x: 7, y: 7 }}>
+				<Layout size={{ x: 5, y: 5 }}>
 					{placeMoves.map((move) => (
 						<Hexagon
 							style={{ fill: 'green' }}
@@ -113,8 +123,9 @@ export default function HiveGame() {
 							q={whiteQueen.pos.q}
 							r={whiteQueen.pos.r}
 							s={0}
+							onClick={() => getValidPieceMoves(whiteQueen.pos)}
 						>
-							<Text style={{ fill: 'white', fontSize: 4 }}> Queen </Text>
+							<Text style={{ fill: 'gold', fontSize: 3 }}> Queen </Text>
 						</Hexagon>
 					) : (
 						<></>
@@ -127,8 +138,9 @@ export default function HiveGame() {
 							q={blackQueen.pos.q}
 							r={blackQueen.pos.r}
 							s={0}
+							onClick={() => getValidPieceMoves(blackQueen.pos)}
 						>
-							<Text style={{ fill: 'white', fontSize: 4 }}> Queen </Text>
+							<Text style={{ fill: 'gold', fontSize: 3 }}> Queen </Text>
 						</Hexagon>
 					) : (
 						<></>
@@ -141,6 +153,8 @@ export default function HiveGame() {
 			<button onClick={() => getValidPlaceMoves(PieceType.QUEEN)}>
 				Place Queen
 			</button>
+			{winner ? <h1>GAME OVER</h1> : <></>}
+			<h1>{hiveWorld.evaluateState()}</h1>
 		</div>
 	);
 }
