@@ -55,13 +55,13 @@ describe("getPlaceMoves() and findPlaceMoveAt(HexPos)", () => {
         expect(placeMoves).toContainEqual({pos: ORIGIN, piece: blackAnt, prev: null});
     })
 
-    test("first place moves has 2: (queen and ant)", () => {
+    test("first place moves has 3: (queen, ant, hopper)", () => {
         let hw = new HiveWorld();
 
         let placeMoves = hw.getPlaceMoves();
 
         expect(placeMoves).toContainEqual({pos: ORIGIN, piece: blackQueen, prev: null})
-        expect(placeMoves.length).toBe(2);
+        expect(placeMoves.length).toBe(3);
     })
 
     test("after turn 6 without queen placed: can only place queen", () => {
@@ -173,7 +173,7 @@ describe("getPieceMoves(Pos)", () => {
         const pieceMoves = hw.getPieceMoves(ORIGIN);
 
         expect(hw.findPieceAt(ORIGIN).type).toBe(PieceType.QUEEN);
-        expect(pieceMoves.length).toBe(5);
+        expect(pieceMoves.length).toBe(2);
     })
 })
 

@@ -27,13 +27,20 @@ export default class HiveWorld {
 		return this.turn % 2 === 0 ? Color.WHITE : Color.BLACK;
 	}
 
+	oppositeColor(color) {
+		if (color === Color.WHITE)
+			return Color.BLACK
+		else if (color === Color.BLACK)
+			return Color.WHITE
+	}
+
 
 	#makeStartingHand(color) {
 		return new Set([
 			new Piece(PieceType.QUEEN, color),
-			new Piece(PieceType.ANT, color),
-			new Piece(PieceType.ANT, color),
-			new Piece(PieceType.ANT, color),
+			new Piece(PieceType.GRASSHOPPER, color),
+			new Piece(PieceType.GRASSHOPPER, color),
+			new Piece(PieceType.GRASSHOPPER, color),
 			new Piece(PieceType.ANT, color),
 			new Piece(PieceType.ANT, color),
 			new Piece(PieceType.ANT, color),
@@ -52,21 +59,24 @@ export default class HiveWorld {
 		return false;
 	}
 
-	evaluateState() {
-		if (this.isGoalState(this.opponentColor))
-			return -1000;
-		if (this.isGoalState(this.currColor)) {
+	evaluateState(color) {
+		if (this.isGoalState(color)) {
 			return 1000;
 		}
+			
+		if (this.isGoalState(this.oppositeColor(color))) {
+			return -1000;
+		}
+		
 		else {
-			if (this.currColor === Color.BLACK) 
-				return this.evalPiecesAround(this.whiteQueenPos) - this.evalPiecesAround(this.blackQueenPos);
-			else if (this.currColor === Color.WHITE) 
-				return this.evalPiecesAround(this.blackQueenPos) - this.evalPiecesAround(this.whiteQueenPos);
+			if (color === Color.BLACK) 
+				return this.countPiecesAround(this.whiteQueenPos) - this.countPiecesAround(this.blackQueenPos);
+			else if (color === Color.WHITE) 
+				return this.countPiecesAround(this.blackQueenPos) - this.countPiecesAround(this.whiteQueenPos);
 		}
 	}
 
-	evalPiecesAround(pos) {
+	countPiecesAround(pos) {
 		if (pos === null)
 			return -1
 		
@@ -250,8 +260,10 @@ export default class HiveWorld {
 
 	getPieceMoves(pos) {
 		const piece = this.findPieceAt(pos);
+
 		if (piece.color !== this.currColor) return [];
 
+		// cant move a piece if queen hasn't been placed yet after turn 6
 		if (this.turn >= 6) {
 			const queen = this.getQueenInHand();
 			if (queen !== undefined) {
@@ -259,6 +271,7 @@ export default class HiveWorld {
 			}
 		}
 
+		// dissallow moves that disconnect the hive
 		for (const adj of pos.adjacent) {
 			const adjPiece = this.findPieceAt(adj);
 			if (adjPiece === undefined && !this.#isBoardConnectedAfterMove(new Move(piece, adj, pos))) {
@@ -267,11 +280,46 @@ export default class HiveWorld {
 		}
 
 		if (piece.type === PieceType.QUEEN)
-			return pos.adjacent.filter(adj => 
-				(this.isPosFreeAndAdjToAnyPieceExcluding(adj, pos) &&
-				this.#canSlideBetween(pos, adj)))
-					.map(adj => new Move(piece, adj, pos));
+			return this.#getQueenMoves(pos);
+		else if (piece.type === PieceType.ANT)
+			return this.#getAntMoves(pos);
+		else if (piece.type === PieceType.GRASSHOPPER)
+			return this.#getGrasshopperMoves(pos);
+	}
 
+	#getQueenMoves(pos) {
+		return pos.adjacent.filter(adj => 
+			(this.isPosFreeAndAdjToAnyPieceExcluding(adj, pos) &&
+			this.#canSlideBetween(pos, adj)))
+				.map(adj => new Move(this.findPieceAt(pos), adj, pos));
+	}
+
+	#getGrasshopperMoves(pos) {
+		let moves = []
+		if (this.findPieceAt(pos.top))
+			moves.push(this.#getMoveOppositeOfDir(pos, (pos) => pos.top));
+		if (this.findPieceAt(pos.topRight))
+			moves.push(this.#getMoveOppositeOfDir(pos, (pos) => pos.topRight));
+		if (this.findPieceAt(pos.botRight))
+			moves.push(this.#getMoveOppositeOfDir(pos, (pos) => pos.botRight));
+		if (this.findPieceAt(pos.bot))
+			moves.push(this.#getMoveOppositeOfDir(pos, (pos) => pos.bot));
+		if (this.findPieceAt(pos.botLeft))
+			moves.push(this.#getMoveOppositeOfDir(pos, (pos) => pos.botLeft));
+		if (this.findPieceAt(pos.topLeft))
+			moves.push(this.#getMoveOppositeOfDir(pos, (pos) => pos.topLeft));
+		return moves
+	}
+
+	#getMoveOppositeOfDir(pos, dirFunc) {
+		let current = dirFunc(pos);
+		while (this.findPieceAt(current)) {
+			current = dirFunc(current);
+		}
+		return new Move(this.findPieceAt(pos), current, pos);
+	}
+
+	#getAntMoves(pos) {
 		const moves = [];
 		const frontier = [pos];
 		const enteredFrontier = new Set();
@@ -311,53 +359,7 @@ export default class HiveWorld {
 		return allMoves;
 	}
 
-	minimaxAlphaBeta(depth, alpha, beta, maximizingPlayer) {
-		if (depth === 0 || this.isGoalState(this.currColor) || this.isGoalState(this.opponentColor)) {
-		  return { move: null, value: this.evaluateState() };
-		}
-	  
-		let bestMove = null;
-	  
-		if (maximizingPlayer) {
-		  let maxEval = Number.NEGATIVE_INFINITY;
-		  const moves = this.getAllPossibleMoves();
-		  for (const move of moves) {
-			this.doMove(move);
-			const evalData = this.minimaxAlphaBeta(depth - 1, alpha, beta, false);
-			this.undoMove(move);
-	  
-			if (evalData.value > maxEval) {
-			  maxEval = evalData.value;
-			  bestMove = move;
-			}
-	  
-			alpha = Math.max(alpha, evalData.value);
-			if (beta <= alpha) {
-			  break;
-			}
-		  }
-		  return { move: bestMove, value: maxEval };
-		} else {
-		  let minEval = Number.POSITIVE_INFINITY;
-		  const moves = this.getAllPossibleMoves();
-		  for (const move of moves) {
-			this.doMove(move);
-			const evalData = this.minimaxAlphaBeta(depth - 1, alpha, beta, true);
-			this.undoMove(move);
-	  
-			if (evalData.value < minEval) {
-			  minEval = evalData.value;
-			  bestMove = move;
-			}
-	  
-			beta = Math.min(beta, evalData.value);
-			if (beta <= alpha) {
-			  break;
-			}
-		  }
-		  return { move: bestMove, value: minEval };
-		}
-	}
+	
 
 	#canSlideBetween(from, to) {
 		const fromAdjBlocked = from.adjacent.filter(pos => this.findPieceAt(pos));
@@ -391,8 +393,6 @@ export default class HiveWorld {
 				}
 			}
 		}
-
-		console.log("connectedCount: " + connectedCount);
 
 		this.board.set(move.prev.toString(), move.piece);
 

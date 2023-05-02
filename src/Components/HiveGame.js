@@ -15,6 +15,8 @@ export default function HiveGame() {
 	const [pieceMoves, setPieceMoves] = useState([]);
 	const [blackAnts, setBlackAnts] = useState([]);
 	const [whiteAnts, setWhiteAnts] = useState([]);
+	const [blackHoppers, setBlackHoppers] = useState([]);
+	const [whiteHoppers, setWhiteHoppers] = useState([]);
 	const [blackQueen, setBlackQueen] = useState();
 	const [whiteQueen, setWhiteQueen] = useState();
 	const [winner, setWinner] = useState(null);
@@ -30,6 +32,8 @@ export default function HiveGame() {
 
 		let blackAnts = [];
 		let whiteAnts = [];
+		let whiteHoppers = [];
+		let blackHoppers = [];
 		hiveWorld.board.forEach((piece, pos) => {
 			pos = HexPos.fromString(pos);
 			if (piece.type === PieceType.ANT && piece.color === Color.BLACK)
@@ -40,6 +44,10 @@ export default function HiveGame() {
 				setWhiteQueen({ pos: pos, piece: piece });
 			else if (piece.type === PieceType.QUEEN && piece.color === Color.BLACK)
 				setBlackQueen({ pos: pos, piece: piece });
+			else if (piece.type === PieceType.GRASSHOPPER && piece.color === Color.WHITE)
+				whiteHoppers.push({ pos: pos, piece: piece });
+			else if (piece.type === PieceType.GRASSHOPPER && piece.color === Color.BLACK)
+				blackHoppers.push({ pos: pos, piece: piece });
 		});
 
 		if (hiveWorld.isGoalState(Color.BLACK))
@@ -49,6 +57,8 @@ export default function HiveGame() {
 
 		setBlackAnts(blackAnts);
 		setWhiteAnts(whiteAnts);
+		setWhiteHoppers(whiteHoppers);
+		setBlackHoppers(blackHoppers);
 	};
 
 	const getValidPlaceMoves = (pieceType) => {
@@ -116,6 +126,30 @@ export default function HiveGame() {
 							<Text style={{ fill: 'white', fontSize: 5 }}> Ant </Text>
 						</Hexagon>
 					))}
+					{whiteHoppers.map((move) => (
+						<Hexagon
+							style={{ fill: 'grey' }}
+							key={`bgh${move.pos.toString()}`}
+							q={move.pos.q}
+							r={move.pos.r}
+							s={0}
+							onClick={() => getValidPieceMoves(move.pos)}
+						>
+							<Text style={{ fill: 'green', fontSize: 5 }}> GH </Text>
+						</Hexagon>
+					))}
+					{blackHoppers.map((move) => (
+						<Hexagon
+							style={{ fill: 'black' }}
+							key={`wgh${move.pos.toString()}`}
+							q={move.pos.q}
+							r={move.pos.r}
+							s={0}
+							onClick={() => getValidPieceMoves(move.pos)}
+						>
+							<Text style={{ fill: 'green', fontSize: 5 }}> GH </Text>
+						</Hexagon>
+					))}
 					{whiteQueen ? (
 						<Hexagon
 							style={{ fill: 'grey' }}
@@ -130,7 +164,6 @@ export default function HiveGame() {
 					) : (
 						<></>
 					)}
-
 					{blackQueen ? (
 						<Hexagon
 							style={{ fill: 'black' }}
@@ -147,11 +180,14 @@ export default function HiveGame() {
 					)}
 				</Layout>
 			</HexGrid>
-			<button onClick={() => getValidPlaceMoves(PieceType.ANT)}>
+			<button onClick={() => getValidPlaceMoves(PieceType.ANT)} style={{background: "lightgray", width: "100px", height: "100px", margin: "10px"}}>
 				Place Ant
 			</button>
-			<button onClick={() => getValidPlaceMoves(PieceType.QUEEN)}>
+			<button onClick={() => getValidPlaceMoves(PieceType.QUEEN)} style={{background: "wheat", width: "100px", height: "100px", margin: "10px"}}>
 				Place Queen
+			</button>
+			<button onClick={() => getValidPlaceMoves(PieceType.GRASSHOPPER)} style={{background: "lightgreen", width: "100px", height: "100px", margin: "10px"}}>
+				Place Hopper
 			</button>
 			{winner ? <h1>GAME OVER</h1> : <></>}
 			<h1>{hiveWorld.evaluateState()}</h1>

@@ -22,7 +22,7 @@ describe("getHand(Color)", () => {
       const handArr = [...hiveWorld.getHand(color)];
 
       expect(countPieces(handArr, PieceType.QUEEN)).toBe(1);
-      expect(countPieces(handArr, PieceType.ANT)).toBe(10);
+      expect(countPieces(handArr, PieceType.ANT)).toBe(7);
     }
   );
 
@@ -219,3 +219,15 @@ describe("getAllPiecePositions()", () => {
     expect(positions[0]).toStrictEqual(ORIGIN)
   })
 });
+
+describe("grasshopper moves", () => {
+  test("first move grasshopper, executes as expected", () => {
+    const hw = new HiveWorld();
+    const placeMoves= hw.getPlaceMoves();
+    const ghMove = placeMoves.find(move => move.piece.type === PieceType.GRASSHOPPER);
+
+    hw.doMove(ghMove);
+
+    expect(hw.findPieceAt(ORIGIN).type).toBe(PieceType.GRASSHOPPER);
+  })
+})
